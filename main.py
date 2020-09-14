@@ -6,17 +6,21 @@ import re
 import requests
 from time import sleep
 
-NEWS_URL = "http://tagesschau.de"
 NEXT_COMMANDS = ["weiter"]
 MORE_COMMANDS = ["mehr"]
 STOP_COMMANDS = ["stopp"]
+
+STARTUP_OUTPUT = "Bereit für Na-Na-Na-Nachrichten?!"
+COMMANDS_OUTPUT = "Unterstützte Befehle sind 'mehr', 'weiter' und 'stopp'."
+FINISHED_OUTPUT = "Habe fertig!"
 
 # The following line became necessary when running on android.
 # More information on this fix can be found at "https://github.com/qpython-android/qpython3/issues/61"
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = "TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-256-GCM-SHA384:ECDHE:!COMPLEMENTOFDEFAULT"
 
 
-def fetch_news():
+def fetch_news_tagesschau():
+    NEWS_URL = "http://tagesschau.de"
     response = requests.get(NEWS_URL)
     html = response.content
     soup = BeautifulSoup(html, "html.parser")
@@ -59,10 +63,10 @@ if __name__ == "__main__":
 
     droid = sl4a.Android()
 
-    news = fetch_news()
+    news = fetch_news_tagesschau()
 
-    speak(droid, "Bereit für Na-Na-Na-Nachrichten?!")
-    speak(droid, "Unterstützte Befehle sind 'mehr', 'weiter' und 'stopp'.")
+    speak(droid, STARTUP_OUTPUT)
+    speak(droid, COMMANDS_OUTPUT)
 
     for item in news:
 
@@ -82,4 +86,4 @@ if __name__ == "__main__":
         else:
             continue
 
-    speak(droid, "Habe fertig!")
+    speak(droid, FINISHED_OUTPUT)
