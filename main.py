@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 import re
 import requests
 
+requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = "TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-256-GCM-SHA384:ECDHE:!COMPLEMENTOFDEFAULT"
+
 NEWS_URL = "http://tagesschau.de"
 
 
@@ -67,7 +69,7 @@ if __name__ == "__main__":
 
         elif command in ["next", "", None]:
             continue
-        
+
         elif command in ["stop"]:
             break
 
