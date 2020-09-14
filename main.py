@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# from androidhelper import sl4a
+from androidhelper import sl4a
 from bs4 import BeautifulSoup
 import re
 import requests
@@ -37,31 +37,38 @@ def read_instructions():
     pass
 
 
-def speak(text):
-    pass
+def speak(droid, text):
+    droid.ttsSpeak(text)
 
 
-def listen():
-    pass
+def listen(droid):
+    try:
+        result = droid.recognizeSpeech()[1]
+        return result
+    except Exception as e:
+        print(str(e))
 
 
 if __name__ == "__main__":
 
+    droid = sl4a.Android()
+
     news = fetch_news()
-    print(news)
 
-    # for item in news:
+    for item in news:
 
-    #     speak(item["title"])
+        speak(droid, item["title"])
 
-    #     command = listen()
-    #     command = command.lower()
+        command = listen(droid)
+        command = command.lower()
 
-    #     if command in ["more"]:
-    #         speak(item["description"])
-    #     elif command in ["next", "", None]:
-    #         continue
-    #     elif command in ["stop"]:
-    #         break
+        if command in ["more"]:
+            speak(item["description"])
 
-    # speak("I am done speaking!")
+        elif command in ["next", "", None]:
+            continue
+        
+        elif command in ["stop"]:
+            break
+
+    speak(droid, "I am done speaking!")
