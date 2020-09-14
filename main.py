@@ -4,10 +4,13 @@ from androidhelper import sl4a
 from bs4 import BeautifulSoup
 import re
 import requests
-
-requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = "TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-256-GCM-SHA384:ECDHE:!COMPLEMENTOFDEFAULT"
+from time import sleep
 
 NEWS_URL = "http://tagesschau.de"
+
+# The following line became necessary when running on android.
+# More information on this fix can be found at "https://github.com/qpython-android/qpython3/issues/61"
+requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = "TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-256-GCM-SHA384:ECDHE:!COMPLEMENTOFDEFAULT"
 
 
 def fetch_news():
@@ -34,16 +37,14 @@ def fetch_news():
     return news
 
 
-def read_instructions():
-    "commands include next, more, stop, nothing"
-    pass
-
-
 def speak(droid, text):
     droid.ttsSpeak(text)
 
 
 def listen(droid):
+    while droid.ttsIsSpeaking()[1]:
+        sleep(0.5)
+
     try:
         result = droid.recognizeSpeech()[1]
         return result
@@ -57,20 +58,25 @@ if __name__ == "__main__":
 
     news = fetch_news()
 
+    speak(droid, "Bereit für Na-Na-Na-Nachrichten?!")
+    speak(droid, "Unterstützte Befehle sind 'mehr', 'weiter' und 'stopp'.")
+
     for item in news:
 
         speak(droid, item["title"])
 
         command = listen(droid)
-        command = command.lower()
 
-        if command in ["more"]:
-            speak(item["description"])
+        if command is not None:
+            command = command.lower()
 
-        elif command in ["next", "", None]:
+        if command in ["mehr"]:
+            speak(droid, item["description"])
+        elif command in ["weiter", "", None]:
+            continue
+        elif command in ["stopp"]:
+            break
+        else:
             continue
 
-        elif command in ["stop"]:
-            break
-
-    speak(droid, "I am done speaking!")
+    speak(droid, "Habe fertig!")
