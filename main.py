@@ -7,6 +7,9 @@ import requests
 from time import sleep
 
 NEWS_URL = "http://tagesschau.de"
+NEXT_COMMANDS = ["weiter"]
+MORE_COMMANDS = ["mehr"]
+STOP_COMMANDS = ["stopp"]
 
 # The following line became necessary when running on android.
 # More information on this fix can be found at "https://github.com/qpython-android/qpython3/issues/61"
@@ -70,11 +73,11 @@ if __name__ == "__main__":
         if command is not None:
             command = command.lower()
 
-        if command in ["mehr"]:
+        if command in MORE_COMMANDS:
             speak(droid, item["description"])
-        elif command in ["weiter", "", None]:
+        elif command in NEXT_COMMANDS:
             continue
-        elif command in ["stopp"]:
+        elif command in STOP_COMMANDS:
             break
         else:
             continue
